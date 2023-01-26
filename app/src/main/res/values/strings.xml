@@ -5,6 +5,10 @@
     <string name="last_name">Last name</string>
     <string name="group">Group</string>
     <string name="gender">Gender</string>
+
+    <string name="save_data">Save data</string>
+    <string name="delete_data">Delete data</string>
+
     <string-array name="genders">
         <item>Unknown</item>
         <item>Male</item>

@@ -2,12 +2,22 @@ package com.gramzin.fitnessclub.data
 
 import android.content.ContentProvider
 import android.content.ContentValues
+import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
 
 class FitnessContentProvider: ContentProvider() {
+    companion object{
+        private const val MEMBERS = 1
+        private const val MEMBER_ID = 2
+    }
 
-    lateinit var dbOpenHelper: FitnessDBHelper
+    private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
+        addURI(FitnessClubContract.AUTHORITY, FitnessClubContract.PATH_MEMBERS, MEMBERS)
+        addURI(FitnessClubContract.AUTHORITY, FitnessClubContract.PATH_MEMBERS + "/#", MEMBER_ID)
+    }
+
+    private lateinit var dbOpenHelper: FitnessDBHelper
 
     override fun onCreate(): Boolean {
         dbOpenHelper = FitnessDBHelper(context)

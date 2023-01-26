@@ -5,6 +5,8 @@ import android.provider.BaseColumns
 object FitnessClubContract {
     const val DATABASE_VERSION = 1
     const val DATABASE_NAME = "fitnessClub"
+    const val AUTHORITY = "com.gramzin.fitnessclub.data"
+    const val PATH_MEMBERS= "members"
 
     object MemberEntry: BaseColumns{
         const val TABLE_NAME = "members"

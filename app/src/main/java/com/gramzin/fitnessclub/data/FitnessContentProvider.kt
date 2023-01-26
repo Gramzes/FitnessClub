@@ -49,8 +49,19 @@ class FitnessContentProvider: ContentProvider() {
         }
     }
 
-    override fun insert(p0: Uri, p1: ContentValues?): Uri? {
-        TODO("Not yet implemented")
+    override fun insert(uri: Uri, contentValues: ContentValues?): Uri {
+        val db = dbOpenHelper.writableDatabase
+        when(uriMatcher.match(uri)){
+            MEMBERS ->{
+                val id = db.insert(MemberEntry.TABLE_NAME, null, contentValues)
+                if (id != -1L){
+                    return ContentUris.withAppendedId(uri, id)
+                }
+                else
+                    throw IllegalArgumentException("Insertion of data in the table failed for $uri")
+            }
+            else -> throw IllegalArgumentException("Insertion of data in the table failed for $uri")
+        }
     }
 
     override fun delete(p0: Uri, p1: String?, p2: Array<out String>?): Int {

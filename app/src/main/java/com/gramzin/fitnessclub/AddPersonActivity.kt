@@ -1,11 +1,16 @@
 package com.gramzin.fitnessclub
 
+import android.content.ContentProvider
+import android.content.ContentResolver
+import android.content.ContentValues
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Toast
 import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
 import com.gramzin.fitnessclub.databinding.ActivityAddPersonBinding
 
@@ -37,11 +42,36 @@ class AddPersonActivity : AppCompatActivity() {
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem) =
         when(item.itemId){
-            R.id.save_data_menu_item -> return true
-            R.id.delete_data_menu_item -> return true
-            else -> return super.onOptionsItemSelected(item)
+            R.id.save_data_menu_item -> {
+                insertMember()
+                true
+            }
+            R.id.delete_data_menu_item -> true
+            else -> super.onOptionsItemSelected(item)
         }
+
+
+    fun insertMember(): Uri?{
+        val firstName = binding.firstNameEditText.text.toString().trim()
+        val lastName = binding.lastNameEditText.text.toString().trim()
+        val group = binding.groupEditText.text.toString().trim()
+
+        val contentValues = ContentValues().apply {
+            put(MemberEntry.COLUMN_FIRST_NAME, firstName)
+            put(MemberEntry.COLUMN_LAST_NAME, lastName)
+            put(MemberEntry.COLUMN_GENDER, genderIndex)
+            put(MemberEntry.COLUMN_GROUP, group)
+        }
+
+        val uri = contentResolver.insert(MemberEntry.CONTENT_URI, contentValues)
+        if (uri == null){
+            Toast.makeText(this, "An error has occurred", Toast.LENGTH_LONG).show()
+        }
+        else{
+            Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
+        }
+        return uri
     }
 }

@@ -1,12 +1,17 @@
 package com.gramzin.fitnessclub.data
 
+import android.content.ContentUris
+import android.net.Uri
 import android.provider.BaseColumns
 
 object FitnessClubContract {
     const val DATABASE_VERSION = 1
     const val DATABASE_NAME = "fitnessClub"
+    const val SCHEME = "content://"
     const val AUTHORITY = "com.gramzin.fitnessclub.data"
     const val PATH_MEMBERS= "members"
+
+    val BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY)
 
     object MemberEntry: BaseColumns{
         const val TABLE_NAME = "members"
@@ -20,5 +25,7 @@ object FitnessClubContract {
         const val GENDER_UNKNOWN = 0
         const val GENDER_MALE = 1
         const val GENDER_FEMALE = 2
+
+        val CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_MEMBERS)
     }
 }

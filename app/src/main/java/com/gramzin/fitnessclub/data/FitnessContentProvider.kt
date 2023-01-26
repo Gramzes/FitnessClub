@@ -1,10 +1,13 @@
 package com.gramzin.fitnessclub.data
 
 import android.content.ContentProvider
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
+import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
+import java.lang.IllegalArgumentException
 
 class FitnessContentProvider: ContentProvider() {
     companion object{
@@ -25,13 +28,25 @@ class FitnessContentProvider: ContentProvider() {
     }
 
     override fun query(
-        p0: Uri,
-        p1: Array<out String>?,
-        p2: String?,
-        p3: Array<out String>?,
-        p4: String?
+        uri: Uri,
+        projection: Array<out String>?,
+        selection: String?,
+        selectionArgs: Array<out String>?,
+        sortOrder: String?
     ): Cursor? {
-        TODO("Not yet implemented")
+        val db = dbOpenHelper.readableDatabase
+        return when(uriMatcher.match(uri)){
+            MEMBERS -> db.query(MemberEntry.TABLE_NAME, projection, selection, selectionArgs,
+                    null, null, sortOrder)
+            MEMBER_ID ->{
+                val id = ContentUris.parseId(uri).toString()
+                db.query(MemberEntry.TABLE_NAME, projection, "${MemberEntry.COLUMN_ID} =?",
+                    arrayOf(id), null, null, sortOrder)
+            }
+            else ->{
+                throw IllegalArgumentException("Can't query incorrect Uri: $uri")
+            }
+        }
     }
 
     override fun insert(p0: Uri, p1: ContentValues?): Uri? {

@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Spinner
+import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
 import com.gramzin.fitnessclub.databinding.ActivityAddPersonBinding
 
 class AddPersonActivity : AppCompatActivity() {
@@ -27,7 +27,7 @@ class AddPersonActivity : AppCompatActivity() {
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
-                genderIndex = 0
+                genderIndex = MemberEntry.GENDER_UNKNOWN
             }
         }
     }

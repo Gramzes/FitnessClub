@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fitness Club</string>
+    <string name="add_person">Добавить человека</string>
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="group">Группа</string>
+    <string name="gender">Пол</string>
+    <string name="save_data">Сохранить данные</string>
+    <string name="delete_data">Удалить данные</string>
+
+    <string-array name="genders">
+        <item>Unknown</item>
+        <item>Мужчина</item>
+        <item>Женщина</item>
+    </string-array>
+</resources>

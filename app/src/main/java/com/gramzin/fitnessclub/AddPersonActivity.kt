@@ -1,7 +1,5 @@
 package com.gramzin.fitnessclub
 
-import android.content.ContentProvider
-import android.content.ContentResolver
 import android.content.ContentValues
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity

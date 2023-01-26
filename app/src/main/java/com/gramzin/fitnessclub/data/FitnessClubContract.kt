@@ -1,6 +1,5 @@
 package com.gramzin.fitnessclub.data
 
-import android.content.ContentUris
 import android.net.Uri
 import android.provider.BaseColumns
 

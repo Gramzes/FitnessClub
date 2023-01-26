@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Fitness Club</string>
+    <string name="add_person">Add person</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="group">Group</string>
+    <string name="gender">Gender</string>
+    <string-array name="genders">
+        <item>Unknown</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+</resources>

@@ -64,8 +64,18 @@ class FitnessContentProvider: ContentProvider() {
         }
     }
 
-    override fun delete(p0: Uri, p1: String?, p2: Array<out String>?): Int {
-        TODO("Not yet implemented")
+    override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
+        val db = dbOpenHelper.writableDatabase
+        return when(uriMatcher.match(uri)){
+            MEMBERS -> db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs)
+            MEMBER_ID ->{
+                val id = ContentUris.parseId(uri).toString()
+                db.delete(MemberEntry.TABLE_NAME, "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
+            }
+            else ->{
+                throw IllegalArgumentException("Can't delete incorrect Uri: $uri")
+            }
+        }
     }
 
     override fun update(uri: Uri, contentVaues: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
@@ -78,7 +88,7 @@ class FitnessContentProvider: ContentProvider() {
                     "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
             }
             else ->{
-                throw IllegalArgumentException("Can't query incorrect Uri: $uri")
+                throw IllegalArgumentException("Can't update incorrect Uri: $uri")
             }
         }
     }

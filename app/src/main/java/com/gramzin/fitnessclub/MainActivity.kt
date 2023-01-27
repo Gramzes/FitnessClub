@@ -1,8 +1,10 @@
 package com.gramzin.fitnessclub
 
 import android.content.Intent
+import android.database.Cursor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.CursorAdapter
 import com.gramzin.fitnessclub.databinding.ActivityMainBinding
 import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
 
@@ -31,24 +33,7 @@ class MainActivity : AppCompatActivity() {
             MemberEntry.COLUMN_LAST_NAME, MemberEntry.COLUMN_GROUP, MemberEntry.COLUMN_GENDER)
         val cursor = contentResolver.query(MemberEntry.CONTENT_URI, projection,
             null, null, null)
-
-        binding.textViewMembers.text = "All members:\n\n"
-        binding.textViewMembers.append(projection.joinToString(separator = "  ", postfix = "\n"))
-
-        val idColumnIndex = cursor?.getColumnIndexOrThrow(MemberEntry.COLUMN_ID)
-        val firstNameColumnIndex = cursor?.getColumnIndexOrThrow(MemberEntry.COLUMN_FIRST_NAME)
-        val lastNameColumnIndex = cursor?.getColumnIndexOrThrow(MemberEntry.COLUMN_LAST_NAME)
-        val groupColumnIndex = cursor?.getColumnIndexOrThrow(MemberEntry.COLUMN_GROUP)
-        val genderColumnIndex = cursor?.getColumnIndexOrThrow(MemberEntry.COLUMN_GENDER)
-
-        while (cursor!=null && cursor?.moveToNext()){
-            val id = cursor.getInt(idColumnIndex!!)
-            val firstName = cursor.getString(firstNameColumnIndex!!)
-            val lastName = cursor.getString(lastNameColumnIndex!!)
-            val group = cursor.getString(groupColumnIndex!!)
-            val gender = cursor.getString(genderColumnIndex!!)
-
-            binding.textViewMembers.append("$id $firstName $lastName $group $gender\n")
-        }
+        val adapter = MemberCursorAdapter(this, cursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
+        binding.membersList.adapter = adapter
     }
 }

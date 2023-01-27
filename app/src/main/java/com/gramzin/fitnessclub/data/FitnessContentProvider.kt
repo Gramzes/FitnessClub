@@ -50,6 +50,18 @@ class FitnessContentProvider: ContentProvider() {
     }
 
     override fun insert(uri: Uri, contentValues: ContentValues?): Uri {
+        if (!contentValues!!.containsKey(MemberEntry.COLUMN_FIRST_NAME))
+            throw IllegalArgumentException("You have to pass the first name to ContentValues")
+        if (!contentValues!!.containsKey(MemberEntry.COLUMN_LAST_NAME))
+            throw IllegalArgumentException("You have to pass the last name to ContentValues")
+        if (!contentValues!!.containsKey(MemberEntry.COLUMN_GROUP))
+            throw IllegalArgumentException("You have to pass the group to ContentValues")
+        val gender = contentValues.getAsInteger(MemberEntry.COLUMN_GENDER)
+        if (gender == null || !(gender == MemberEntry.GENDER_UNKNOWN ||
+                    gender == MemberEntry.GENDER_FEMALE || gender == MemberEntry.GENDER_MALE))
+            throw IllegalArgumentException("The gender parameter is not specified " +
+                    "in ContentValues or is specified incorrectly")
+
         val db = dbOpenHelper.writableDatabase
         when(uriMatcher.match(uri)){
             MEMBERS ->{
@@ -78,13 +90,20 @@ class FitnessContentProvider: ContentProvider() {
         }
     }
 
-    override fun update(uri: Uri, contentVaues: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(uri: Uri, contentValues: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+        if (contentValues!!.containsKey(MemberEntry.COLUMN_GENDER)) {
+            val gender = contentValues?.getAsInteger(MemberEntry.COLUMN_GENDER)
+            if (gender == null || !(gender == MemberEntry.GENDER_UNKNOWN ||
+                        gender == MemberEntry.GENDER_FEMALE || gender == MemberEntry.GENDER_MALE)
+            )
+                throw IllegalArgumentException("The gender parameter in ContentValues is specified incorrectly")
+        }
         val db = dbOpenHelper.writableDatabase
         return when(uriMatcher.match(uri)){
-            MEMBERS -> db.update(MemberEntry.TABLE_NAME, contentVaues, selection, selectionArgs)
+            MEMBERS -> db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs)
             MEMBER_ID ->{
                 val id = ContentUris.parseId(uri).toString()
-                db.update(MemberEntry.TABLE_NAME, contentVaues,
+                db.update(MemberEntry.TABLE_NAME, contentValues,
                     "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
             }
             else ->{

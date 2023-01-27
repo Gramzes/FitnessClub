@@ -84,54 +84,48 @@ class FitnessContentProvider: ContentProvider() {
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
         val db = dbOpenHelper.writableDatabase
-        return when(uriMatcher.match(uri)){
+        var count = when(uriMatcher.match(uri)){
             MEMBERS -> {
-                val count = db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs)
-                if (count > 0)
-                    context?.contentResolver?.notifyChange(uri, null)
-                count
+                 db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs)
             }
             MEMBER_ID ->{
                 val id = ContentUris.parseId(uri).toString()
-                val count = db.delete(MemberEntry.TABLE_NAME, "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
-                if (count > 0)
-                    context?.contentResolver?.notifyChange(uri, null)
-                count
+                db.delete(MemberEntry.TABLE_NAME, "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
             }
             else ->{
                 throw IllegalArgumentException("Can't delete incorrect Uri: $uri")
             }
         }
+        if (count > 0)
+            context?.contentResolver?.notifyChange(uri, null)
+        return count
     }
 
     override fun update(uri: Uri, contentValues: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
         if (contentValues!!.containsKey(MemberEntry.COLUMN_GENDER)) {
             val gender = contentValues?.getAsInteger(MemberEntry.COLUMN_GENDER)
             if (gender == null || !(gender == MemberEntry.GENDER_UNKNOWN ||
-                        gender == MemberEntry.GENDER_FEMALE || gender == MemberEntry.GENDER_MALE)
-            )
+                        gender == MemberEntry.GENDER_FEMALE || gender == MemberEntry.GENDER_MALE))
                 throw IllegalArgumentException("The gender parameter in ContentValues is specified incorrectly")
         }
         val db = dbOpenHelper.writableDatabase
-        return when(uriMatcher.match(uri)){
+        var count = when(uriMatcher.match(uri)){
             MEMBERS -> {
-                val count = db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs)
-                if (count > 0)
-                    context?.contentResolver?.notifyChange(uri, null)
-                count
+                db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs)
             }
             MEMBER_ID ->{
                 val id = ContentUris.parseId(uri).toString()
-                val count = db.update(MemberEntry.TABLE_NAME, contentValues,
+                db.update(MemberEntry.TABLE_NAME, contentValues,
                     "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
-                if (count > 0)
-                    context?.contentResolver?.notifyChange(uri, null)
-                count
+
             }
             else ->{
                 throw IllegalArgumentException("Can't update incorrect Uri: $uri")
             }
         }
+        if (count > 0)
+            context?.contentResolver?.notifyChange(uri, null)
+        return count
     }
 
     override fun getType(uri: Uri): String? {

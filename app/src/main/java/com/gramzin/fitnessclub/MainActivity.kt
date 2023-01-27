@@ -5,12 +5,19 @@ import android.database.Cursor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.CursorAdapter
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
 import com.gramzin.fitnessclub.databinding.ActivityMainBinding
 import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>{
 
+    companion object{
+        const val MEMBER_LOADER = 249
+    }
     lateinit var binding: ActivityMainBinding
+    lateinit var memberCursorAdapter: MemberCursorAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,19 +28,23 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddPersonActivity::class.java)
             startActivity(intent)
         }
+        memberCursorAdapter  = MemberCursorAdapter(this, null, 0)
+        binding.membersList.adapter = memberCursorAdapter
+        LoaderManager.getInstance(this).initLoader(MEMBER_LOADER,null, this)
     }
 
-    override fun onStart() {
-        super.onStart()
-        displayData()
-    }
-
-    fun displayData(){
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
         val projection = arrayOf(MemberEntry.COLUMN_ID, MemberEntry.COLUMN_FIRST_NAME,
             MemberEntry.COLUMN_LAST_NAME, MemberEntry.COLUMN_GROUP, MemberEntry.COLUMN_GENDER)
-        val cursor = contentResolver.query(MemberEntry.CONTENT_URI, projection,
+        return CursorLoader(this, MemberEntry.CONTENT_URI, projection,
             null, null, null)
-        val adapter = MemberCursorAdapter(this, cursor, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER)
-        binding.membersList.adapter = adapter
+    }
+
+    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
+        memberCursorAdapter.swapCursor(data)
+    }
+
+    override fun onLoaderReset(loader: Loader<Cursor>) {
+        memberCursorAdapter.swapCursor(null)
     }
 }

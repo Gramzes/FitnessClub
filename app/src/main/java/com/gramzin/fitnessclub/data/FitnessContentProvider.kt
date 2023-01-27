@@ -35,7 +35,7 @@ class FitnessContentProvider: ContentProvider() {
         sortOrder: String?
     ): Cursor? {
         val db = dbOpenHelper.readableDatabase
-        return when(uriMatcher.match(uri)){
+        val cursor = when(uriMatcher.match(uri)){
             MEMBERS -> db.query(MemberEntry.TABLE_NAME, projection, selection, selectionArgs,
                     null, null, sortOrder)
             MEMBER_ID ->{
@@ -47,6 +47,8 @@ class FitnessContentProvider: ContentProvider() {
                 throw IllegalArgumentException("Can't query incorrect Uri: $uri")
             }
         }
+        cursor.setNotificationUri(context?.contentResolver, uri)
+        return cursor
     }
 
     override fun insert(uri: Uri, contentValues: ContentValues?): Uri {
@@ -63,10 +65,12 @@ class FitnessContentProvider: ContentProvider() {
                     "in ContentValues or is specified incorrectly")
 
         val db = dbOpenHelper.writableDatabase
+
         when(uriMatcher.match(uri)){
             MEMBERS ->{
                 val id = db.insert(MemberEntry.TABLE_NAME, null, contentValues)
                 if (id != -1L){
+                    context?.contentResolver?.notifyChange(uri, null)
                     return ContentUris.withAppendedId(uri, id)
                 }
                 else
@@ -74,15 +78,25 @@ class FitnessContentProvider: ContentProvider() {
             }
             else -> throw IllegalArgumentException("Insertion of data in the table failed for $uri")
         }
+
+
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
         val db = dbOpenHelper.writableDatabase
         return when(uriMatcher.match(uri)){
-            MEMBERS -> db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs)
+            MEMBERS -> {
+                val count = db.delete(MemberEntry.TABLE_NAME, selection, selectionArgs)
+                if (count > 0)
+                    context?.contentResolver?.notifyChange(uri, null)
+                count
+            }
             MEMBER_ID ->{
                 val id = ContentUris.parseId(uri).toString()
-                db.delete(MemberEntry.TABLE_NAME, "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
+                val count = db.delete(MemberEntry.TABLE_NAME, "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
+                if (count > 0)
+                    context?.contentResolver?.notifyChange(uri, null)
+                count
             }
             else ->{
                 throw IllegalArgumentException("Can't delete incorrect Uri: $uri")
@@ -100,11 +114,19 @@ class FitnessContentProvider: ContentProvider() {
         }
         val db = dbOpenHelper.writableDatabase
         return when(uriMatcher.match(uri)){
-            MEMBERS -> db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs)
+            MEMBERS -> {
+                val count = db.update(MemberEntry.TABLE_NAME, contentValues, selection, selectionArgs)
+                if (count > 0)
+                    context?.contentResolver?.notifyChange(uri, null)
+                count
+            }
             MEMBER_ID ->{
                 val id = ContentUris.parseId(uri).toString()
-                db.update(MemberEntry.TABLE_NAME, contentValues,
+                val count = db.update(MemberEntry.TABLE_NAME, contentValues,
                     "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
+                if (count > 0)
+                    context?.contentResolver?.notifyChange(uri, null)
+                count
             }
             else ->{
                 throw IllegalArgumentException("Can't update incorrect Uri: $uri")

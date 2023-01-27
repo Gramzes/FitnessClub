@@ -7,8 +7,8 @@ object FitnessClubContract {
     const val DATABASE_VERSION = 1
     const val DATABASE_NAME = "fitnessClub"
     const val SCHEME = "content://"
-    const val AUTHORITY = "com.gramzin.fitnessclub.data"
-    const val PATH_MEMBERS= "members"
+    const val AUTHORITY = "com.gramzin.fitnessclub"
+    const val PATH_MEMBERS= "data/members"
 
     val BASE_CONTENT_URI = Uri.parse(SCHEME + AUTHORITY)
 

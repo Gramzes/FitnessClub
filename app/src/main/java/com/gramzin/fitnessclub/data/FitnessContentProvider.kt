@@ -68,8 +68,19 @@ class FitnessContentProvider: ContentProvider() {
         TODO("Not yet implemented")
     }
 
-    override fun update(p0: Uri, p1: ContentValues?, p2: String?, p3: Array<out String>?): Int {
-        TODO("Not yet implemented")
+    override fun update(uri: Uri, contentVaues: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+        val db = dbOpenHelper.writableDatabase
+        return when(uriMatcher.match(uri)){
+            MEMBERS -> db.update(MemberEntry.TABLE_NAME, contentVaues, selection, selectionArgs)
+            MEMBER_ID ->{
+                val id = ContentUris.parseId(uri).toString()
+                db.update(MemberEntry.TABLE_NAME, contentVaues,
+                    "${MemberEntry.COLUMN_ID} =?", arrayOf(id))
+            }
+            else ->{
+                throw IllegalArgumentException("Can't query incorrect Uri: $uri")
+            }
+        }
     }
 
     override fun getType(p0: Uri): String? {

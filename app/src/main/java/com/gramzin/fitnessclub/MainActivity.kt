@@ -1,9 +1,12 @@
 package com.gramzin.fitnessclub
 
+import android.content.ContentUris
 import android.content.Intent
 import android.database.Cursor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.CursorAdapter
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
@@ -31,6 +34,13 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>{
         memberCursorAdapter  = MemberCursorAdapter(this, null, 0)
         binding.membersList.adapter = memberCursorAdapter
         LoaderManager.getInstance(this).initLoader(MEMBER_LOADER,null, this)
+
+        binding.membersList.setOnItemClickListener { adapterView, view, position, id->
+            Intent(this, AddPersonActivity::class.java).apply {
+                data = ContentUris.withAppendedId(MemberEntry.CONTENT_URI, id)
+                startActivity(this)
+            }
+        }
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {

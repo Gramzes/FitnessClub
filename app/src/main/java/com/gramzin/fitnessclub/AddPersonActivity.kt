@@ -33,6 +33,13 @@ class AddPersonActivity : AppCompatActivity() {
                 genderIndex = MemberEntry.GENDER_UNKNOWN
             }
         }
+
+        val data = intent.data
+        title = if(data == null)
+            resources.getString(R.string.add_person)
+        else
+            resources.getString(R.string.change_data)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

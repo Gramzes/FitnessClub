@@ -14,4 +14,5 @@
         <item>Мужчина</item>
         <item>Женщина</item>
     </string-array>
+    <string name="change_data">Изменить данные</string>
 </resources>

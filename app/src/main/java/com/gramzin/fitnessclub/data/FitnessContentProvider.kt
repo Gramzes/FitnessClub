@@ -93,7 +93,13 @@ class FitnessContentProvider: ContentProvider() {
         }
     }
 
-    override fun getType(p0: Uri): String? {
-        TODO("Not yet implemented")
+    override fun getType(uri: Uri): String? {
+        return when(uriMatcher.match(uri)){
+            MEMBERS -> MemberEntry.MIME_MULTIPLIE_ITEMS
+            MEMBER_ID -> MemberEntry.MIME_SINGLE_ITEM
+            else ->{
+                throw IllegalArgumentException("Unknown Uri: $uri")
+            }
+        }
     }
 }

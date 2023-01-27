@@ -1,5 +1,6 @@
 package com.gramzin.fitnessclub.data
 
+import android.content.ContentResolver
 import android.net.Uri
 import android.provider.BaseColumns
 
@@ -26,5 +27,8 @@ object FitnessClubContract {
         const val GENDER_FEMALE = 2
 
         val CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_MEMBERS)
+
+        val MIME_MULTIPLIE_ITEMS = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + AUTHORITY + "/" + PATH_MEMBERS
+        val MIME_SINGLE_ITEM = ContentResolver.CURSOR_ITEM_BASE_TYPE +"/vnd." + AUTHORITY + "/" + PATH_MEMBERS
     }
 }

@@ -72,6 +72,11 @@ class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cu
         val lastName = binding.lastNameEditText.text.toString().trim()
         val group = binding.groupEditText.text.toString().trim()
 
+        if (firstName.isEmpty() || lastName.isEmpty() ||
+            group.isEmpty() || genderIndex == MemberEntry.GENDER_UNKNOWN){
+            Toast.makeText(this, "Enter all data", Toast.LENGTH_LONG).show()
+            return null
+        }
         val contentValues = ContentValues().apply {
             put(MemberEntry.COLUMN_FIRST_NAME, firstName)
             put(MemberEntry.COLUMN_LAST_NAME, lastName)

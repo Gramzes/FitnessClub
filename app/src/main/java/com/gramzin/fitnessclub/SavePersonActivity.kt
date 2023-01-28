@@ -51,6 +51,15 @@ class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cu
             LoaderManager.getInstance(this).initLoader(MEMBER_CHANGE,null, this)
             resources.getString(R.string.change_data)
         }
+        invalidateOptionsMenu()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        super.onPrepareOptionsMenu(menu)
+        if (uriMemberChange == null) {
+            menu.findItem(R.id.delete_data_menu_item).isVisible = false
+        }
+        return true
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

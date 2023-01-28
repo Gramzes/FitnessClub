@@ -15,4 +15,7 @@
         <item>Женщина</item>
     </string-array>
     <string name="change_data">Изменить данные</string>
+    <string name="conf_record_delete">Вы действительно хотите удалить эту запись?</string>
+    <string name="delete">Удалить</string>
+    <string name="cancel">Отмена</string>
 </resources>

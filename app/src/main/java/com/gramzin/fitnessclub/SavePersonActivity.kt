@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
@@ -63,7 +64,10 @@ class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cu
                 saveMember()
                 true
             }
-            R.id.delete_data_menu_item -> true
+            R.id.delete_data_menu_item -> {
+                showMemberDeleteDialog()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 
@@ -89,6 +93,7 @@ class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cu
                 Toast.makeText(this, "An error has occurred", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
+                finish()
             }
             return uri
         }
@@ -98,6 +103,7 @@ class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cu
                 Toast.makeText(this, "An error has occurred", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(this, "Data changed", Toast.LENGTH_SHORT).show()
+                finish()
             }
             return uriMemberChange
         }
@@ -122,5 +128,35 @@ class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cu
     }
 
     override fun onLoaderReset(loader: Loader<Cursor>) {
+    }
+
+    fun showMemberDeleteDialog(){
+        if (uriMemberChange != null) {
+            AlertDialog.Builder(this).apply {
+                setMessage(resources.getString(R.string.conf_record_delete))
+                setPositiveButton(R.string.delete) { builder, _ ->
+                    deleteMember()
+                    builder.cancel()
+                    finish()
+                }
+                setNegativeButton(R.string.cancel) { builder, _ ->
+                    builder.cancel()
+                }
+                create()
+            }.show()
+        }
+    }
+    fun deleteMember(){
+        val count = contentResolver.delete(uriMemberChange!!, null, null)
+        if (count == 0) {
+            Toast.makeText(
+                this,
+                "An error has occurred",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            Toast.makeText(this, "Data deleted", Toast.LENGTH_SHORT)
+                .show()
+        }
     }
 }

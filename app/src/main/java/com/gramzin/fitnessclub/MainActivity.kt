@@ -5,9 +5,6 @@ import android.content.Intent
 import android.database.Cursor
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.CursorAdapter
 import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
@@ -28,7 +25,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>{
         setContentView(binding.root)
 
         binding.addPersonBtn.setOnClickListener{
-            val intent = Intent(this, AddPersonActivity::class.java)
+            val intent = Intent(this, SavePersonActivity::class.java)
             startActivity(intent)
         }
         memberCursorAdapter  = MemberCursorAdapter(this, null, 0)
@@ -36,7 +33,7 @@ class MainActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor>{
         LoaderManager.getInstance(this).initLoader(MEMBER_LOADER,null, this)
 
         binding.membersList.setOnItemClickListener { adapterView, view, position, id->
-            Intent(this, AddPersonActivity::class.java).apply {
+            Intent(this, SavePersonActivity::class.java).apply {
                 data = ContentUris.withAppendedId(MemberEntry.CONTENT_URI, id)
                 startActivity(this)
             }

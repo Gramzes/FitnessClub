@@ -14,26 +14,26 @@ import androidx.loader.app.LoaderManager
 import androidx.loader.content.CursorLoader
 import androidx.loader.content.Loader
 import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
-import com.gramzin.fitnessclub.databinding.ActivityAddPersonBinding
+import com.gramzin.fitnessclub.databinding.ActivitySavePersonBinding
 
-class AddPersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
+class SavePersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
 
     companion object{
         const val MEMBER_CHANGE = 249
     }
 
-    private lateinit var binding: ActivityAddPersonBinding
+    private lateinit var binding: ActivitySavePersonBinding
     private var genderIndex = 0
     private var uriMemberChange: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddPersonBinding.inflate(layoutInflater)
+        binding = ActivitySavePersonBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.genderSpinner.onItemSelectedListener = object:AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val genders = this@AddPersonActivity.resources.getStringArray(R.array.genders)
+                val genders = this@SavePersonActivity.resources.getStringArray(R.array.genders)
                 val gender = parent?.getItemAtPosition(position) as String
                 genderIndex = genders.indexOf(gender)
             }
@@ -60,15 +60,14 @@ class AddPersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cur
     override fun onOptionsItemSelected(item: MenuItem) =
         when(item.itemId){
             R.id.save_data_menu_item -> {
-                insertMember()
+                saveMember()
                 true
             }
             R.id.delete_data_menu_item -> true
             else -> super.onOptionsItemSelected(item)
         }
 
-
-    fun insertMember(): Uri?{
+    private fun saveMember(): Uri?{
         val firstName = binding.firstNameEditText.text.toString().trim()
         val lastName = binding.lastNameEditText.text.toString().trim()
         val group = binding.groupEditText.text.toString().trim()
@@ -79,15 +78,24 @@ class AddPersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cur
             put(MemberEntry.COLUMN_GENDER, genderIndex)
             put(MemberEntry.COLUMN_GROUP, group)
         }
-
-        val uri = contentResolver.insert(MemberEntry.CONTENT_URI, contentValues)
-        if (uri == null){
-            Toast.makeText(this, "An error has occurred", Toast.LENGTH_LONG).show()
+        if (uriMemberChange == null) {
+            val uri = contentResolver.insert(MemberEntry.CONTENT_URI, contentValues)
+            if (uri == null) {
+                Toast.makeText(this, "An error has occurred", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
+            }
+            return uri
         }
         else{
-            Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
+            val count = contentResolver.update(uriMemberChange!!, contentValues, null, null)
+            if (count == 0) {
+                Toast.makeText(this, "An error has occurred", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(this, "Data changed", Toast.LENGTH_SHORT).show()
+            }
+            return uriMemberChange
         }
-        return uri
     }
 
     override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {

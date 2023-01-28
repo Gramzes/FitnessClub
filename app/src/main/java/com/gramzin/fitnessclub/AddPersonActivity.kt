@@ -1,6 +1,7 @@
 package com.gramzin.fitnessclub
 
 import android.content.ContentValues
+import android.database.Cursor
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,13 +10,21 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
+import androidx.loader.app.LoaderManager
+import androidx.loader.content.CursorLoader
+import androidx.loader.content.Loader
 import com.gramzin.fitnessclub.data.FitnessClubContract.MemberEntry
 import com.gramzin.fitnessclub.databinding.ActivityAddPersonBinding
 
-class AddPersonActivity : AppCompatActivity() {
+class AddPersonActivity : AppCompatActivity(), LoaderManager.LoaderCallbacks<Cursor> {
 
-    lateinit var binding: ActivityAddPersonBinding
+    companion object{
+        const val MEMBER_CHANGE = 249
+    }
+
+    private lateinit var binding: ActivityAddPersonBinding
     private var genderIndex = 0
+    private var uriMemberChange: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,12 +43,13 @@ class AddPersonActivity : AppCompatActivity() {
             }
         }
 
-        val data = intent.data
-        title = if(data == null)
+        uriMemberChange = intent.data
+        title = if(uriMemberChange == null)
             resources.getString(R.string.add_person)
-        else
+        else {
+            LoaderManager.getInstance(this).initLoader(MEMBER_CHANGE,null, this)
             resources.getString(R.string.change_data)
-
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -78,5 +88,26 @@ class AddPersonActivity : AppCompatActivity() {
             Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
         }
         return uri
+    }
+
+    override fun onCreateLoader(id: Int, args: Bundle?): Loader<Cursor> {
+        val projection = arrayOf(MemberEntry.COLUMN_ID, MemberEntry.COLUMN_FIRST_NAME,
+            MemberEntry.COLUMN_LAST_NAME, MemberEntry.COLUMN_GROUP, MemberEntry.COLUMN_GENDER)
+        return CursorLoader(this, uriMemberChange!!, projection,
+            null, null, null)
+    }
+
+    override fun onLoadFinished(loader: Loader<Cursor>, data: Cursor?) {
+        with(binding){
+            if(data != null && data.moveToFirst()) {
+                firstNameEditText.setText(data.getString(data.getColumnIndexOrThrow(MemberEntry.COLUMN_FIRST_NAME)))
+                lastNameEditText.setText(data.getString(data.getColumnIndexOrThrow(MemberEntry.COLUMN_LAST_NAME)))
+                groupEditText.setText(data.getString(data.getColumnIndexOrThrow(MemberEntry.COLUMN_GROUP)))
+                genderSpinner.setSelection(data.getInt(data.getColumnIndexOrThrow(MemberEntry.COLUMN_GENDER)))
+            }
+        }
+    }
+
+    override fun onLoaderReset(loader: Loader<Cursor>) {
     }
 }
